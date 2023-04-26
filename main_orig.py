@@ -1,34 +1,71 @@
 import pyautogui as pg
 import pynput
 import time
+import tkinter as tk
 import os
 
 year = 1922
 publication = 1
 
 
-def set_topic():
+def write_configs():
     global year, publication
-    well_passed = False
-    print('Hello! You are entering the screen prog!\n')
-    while not well_passed:
-        inp_year = input('Enter year\n').strip()
-        inp_publication = input('Enter publication\n').strip()
-        try:
-            int(year)
-            int(publication)
-        except ValueError:
-            print('Reenter values\n')
-            continue
-        finally:
-            year = inp_year
-            publication = inp_publication
-            well_passed = True
-            break
-    print(f'Year set to {year}, publication set to {publication}\n')
+    entered_year_label.config(text='Year - {}'.format(year))
+    entered_publication_label.config(text='Publication - {}'.format(publication))
+
+def show_error():
+    error_window = tk.Toplevel(root)
+    error_window.title("Error")
+    error_label = tk.Label(error_window, text="Error while entering data")
+    error_label.pack(padx=10, pady=10)
 
 
-set_topic()
+def success_win(success_text):
+    error_window = tk.Toplevel(root)
+    error_window.title("Success")
+    error_label = tk.Label(error_window, text=success_text)
+    error_label.pack(padx=10, pady=10)
+
+def submit_meta():
+    global year, publication
+    try:
+        int(year_entry.get())
+        int(pub_entry.get())
+    except ValueError:
+        show_error()
+    finally:
+        year = year_entry.get()
+        publication = pub_entry.get()
+        write_configs()
+
+root = tk.Tk()
+root.title("Publication Info")
+
+
+entered_year_label = tk.Label(root, text="year")
+entered_year_label.grid(row=3, column=0, padx=5, pady=5)
+
+entered_publication_label = tk.Label(root, text="publication")
+entered_publication_label.grid(row=4, column=0, padx=5, pady=5)
+
+year_label = tk.Label(root, text="Year:")
+year_label.grid(row=0, column=0, padx=5, pady=5)
+
+year_entry = tk.Entry(root)
+year_entry.grid(row=0, column=1, padx=5, pady=5)
+
+pub_label = tk.Label(root, text="Publication:")
+pub_label.grid(row=1, column=0, padx=5, pady=5)
+
+pub_entry = tk.Entry(root)
+pub_entry.grid(row=1, column=1, padx=5, pady=5)
+
+submit_button = tk.Button(root, text="Submit", command=submit_meta)
+submit_button.grid(row=2, column=1, padx=5, pady=5)
+
+
+
+
 
 # Лютое колесо - нужно зарефакторить
 def screenshot_mode():
@@ -55,9 +92,7 @@ def create_screenshot(first, second, width, height):
     if first[0] < second[0]:
         pg.screenshot(full_name, (first[0], first[1], abs(second[0] - first[0]), abs(second[1] - first[1])))
 
-    print(f'Screenshot saved at {full_name}')
-
-
+    success_win(f'Screenshot saved at {full_name}')
 
 
 def on_activate():
@@ -70,14 +105,11 @@ def on_activate():
     create_screenshot(first, second, width, height)
 
 
-
 #####################################
 # Ниже часть, которая отвечает за работу хоткея - тоже колесо
 
 with pynput.keyboard.GlobalHotKeys({
     '<ctrl>+<alt>+3': on_activate,
-    '<ctrl>+<alt>+4': set_topic}) as hotkeys:
+    '<ctrl>+<alt>+4': submit_meta}) as hotkeys:
+    root.mainloop()
     hotkeys.join()
-
-#####################################
-
