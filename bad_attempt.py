@@ -4,9 +4,12 @@ import time
 import tkinter as tk
 import os
 
-year = 1922
+year = 1
 publication = 1
 
+
+def change_mode_status(status):
+    mode_status_label.config(text=status)
 
 def write_configs():
     global year, publication
@@ -16,14 +19,16 @@ def write_configs():
 def show_error():
     error_window = tk.Toplevel(root)
     error_window.title("Error")
+    error_window.geometry("300x100+1500+50")
     error_label = tk.Label(error_window, text="Error while entering data")
     error_label.pack(padx=10, pady=10)
 
 
 def success_win(success_text):
-    error_window = tk.Toplevel(root)
-    error_window.title("Success")
-    error_label = tk.Label(error_window, text=success_text)
+    success_window = tk.Toplevel(root)
+    success_window.title("Success")
+    success_window.geometry("300x100+1500+50")
+    error_label = tk.Label(success_window, text=success_text)
     error_label.pack(padx=10, pady=10)
 
 def submit_meta():
@@ -38,15 +43,10 @@ def submit_meta():
         publication = pub_entry.get()
         write_configs()
 
+
 root = tk.Tk()
-root.title("Publication Info")
-
-
-entered_year_label = tk.Label(root, text="year")
-entered_year_label.grid(row=3, column=0, padx=5, pady=5)
-
-entered_publication_label = tk.Label(root, text="publication")
-entered_publication_label.grid(row=4, column=0, padx=5, pady=5)
+root.title("Sreenshooter")
+root.geometry("400x200+1500+50")
 
 year_label = tk.Label(root, text="Year:")
 year_label.grid(row=0, column=0, padx=5, pady=5)
@@ -63,17 +63,23 @@ pub_entry.grid(row=1, column=1, padx=5, pady=5)
 submit_button = tk.Button(root, text="Submit", command=submit_meta)
 submit_button.grid(row=2, column=1, padx=5, pady=5)
 
+entered_year_label = tk.Label(root, text="year")
+entered_year_label.grid(row=3, column=0, padx=5, pady=5)
+
+entered_publication_label = tk.Label(root, text="publication")
+entered_publication_label.grid(row=4, column=0, padx=5, pady=5)
+
+mode_status_label = tk.Label(root)
+mode_status_label.grid(row=5, column=1, padx=5, pady=5)
 
 
-
-
-# Лютое колесо - нужно зарефакторить
 def screenshot_mode():
     with pynput.mouse.Events() as events:
         for event in events:
             if type(event) == pynput.mouse.Events.Click:
                 if event.button == pynput.mouse.Button.left:
                     return pg.position()
+
 
 def create_screenshot(first, second, width, height):
     name = 1
@@ -94,22 +100,18 @@ def create_screenshot(first, second, width, height):
 
     success_win(f'Screenshot saved at {full_name}')
 
-
-def on_activate():
-    print('Screenshot mode activated!')
+# pass_arg is needed just to lock standard Tkinter bind call with 1 argument
+def activate_screenshot_mode(pass_arg=None):
+    change_mode_status('Screenshot mode activated!')
+    print('Screenshot mode activated')
     first = screenshot_mode()
-    time.sleep(1)
     second = screenshot_mode()
     width = abs(first[0] - second[0])
     height = abs(first[1] - second[1])
     create_screenshot(first, second, width, height)
+    # change_mode_status('Screenshot mode inactive!')
 
 
-#####################################
-# Ниже часть, которая отвечает за работу хоткея - тоже колесо
-
-with pynput.keyboard.GlobalHotKeys({
-    '<ctrl>+<alt>+3': on_activate,
-    '<ctrl>+<alt>+4': submit_meta}) as hotkeys:
-    root.mainloop()
-    hotkeys.join()
+root.focus_set()
+root.bind("<Escape>", activate_screenshot_mode)
+root.mainloop()
