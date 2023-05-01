@@ -1,14 +1,13 @@
 import pymysql.cursors
-from dbconfig import *
 
 
 def connect_to_db(func):
     def wrapper(*args, **kwargs):
         with pymysql.connect(
-                host=HOST,
-                user=USER,
-                password=PASSWORD,
-                database=DATABASE,
+                host='localhost',
+                user='croco',
+                password='password',
+                database='pictures',
                 cursorclass=pymysql.cursors.DictCursor) as conn:
             with conn.cursor() as cursor:
                 sql = func(*args, **kwargs)
@@ -22,10 +21,10 @@ def connect_to_db(func):
 def connect_to_db_with_no_args(func):
     def wrapper(*args, **kwargs):
         with pymysql.connect(
-                host=HOST,
-                user=USER,
-                password=PASSWORD,
-                database=DATABASE,
+                host='localhost',
+                user='croco',
+                password='password',
+                database='pictures',
                 cursorclass=pymysql.cursors.DictCursor) as conn:
             with conn.cursor() as cursor:
                 sql = func(*args, **kwargs)

@@ -44,12 +44,12 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        ####setting up ui
+        # setting up ui
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.center()
 
-        ####creating connections
+        # creating connections
 
         self.ui.button_browser.pressed.connect(self.browser_invoker)
         self.ui.confim_button.pressed.connect(self.confirm_text)
@@ -57,11 +57,12 @@ class MainWindow(QMainWindow):
         self.ui.button_previous.pressed.connect(self.previous_image)
         self.ui.button_check_described.pressed.connect(self.check_multiple_description)
         self.ui.pushButton_delete_image.pressed.connect(self.delete_image)
+        self.ui.button_change_description.pressed.connect(self.change_description)
 
         self.init_completers()
 
 
-        ####setting up variables
+        # setting up variables
 
         self.path_to_curr_img = ''
         self.curr_year = ''
@@ -142,6 +143,13 @@ class MainWindow(QMainWindow):
         finally:
             self.conf_win.close()
 
+    def change_description(self):
+        # unsave function
+            path_of_img = 'screens' + '/' + self.curr_year + '/' + self.curr_publication + '/' + self.curr_screen
+            delete_rows_by_path_to_file(path_of_img)
+            self.commit()
+
+
     def confirm_text(self):
         self.conf_win = ConfirmationWindow()
         output = self.translate_to_json().replace(',', '\n')
@@ -167,7 +175,7 @@ class MainWindow(QMainWindow):
             "country": self.ui.lineEdit_country.text().split(','),
             "topic": self.ui.lineEdit_topic.text(),
             "author": self.ui.lineEdit_author.text(),
-            "text from picture": self.ui.textEdit_text_from_picture.text(),
+            "text from picture": self.ui.textEdit_text_from_picture.toPlainText(),
 
             "anciene_regime": self.ui_val_to_bool(self.ui.checkBox_ancine_regime.checkState().value),
             "swastic": self.ui_val_to_bool(self.ui.checkBox_swastic.checkState().value),
