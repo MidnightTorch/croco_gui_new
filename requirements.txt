@@ -1,0 +1,5 @@
+PyAutoGUI==0.9.53
+PyMySQL==1.0.3
+pynput==1.7.6
+PyQt6==6.5.0
+PyQt6_sip==13.5.0
